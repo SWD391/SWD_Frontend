@@ -14,29 +14,22 @@ import {
 import { GoogleIcon } from "./GoogleIcon";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { auth, provider } from "@/app/firebase";
+import { RootState, AppDispatch } from "@/redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "@/redux/slices/auth.slice";
 
 export default function SignIn() {
+  const user = useSelector((state: RootState) => state.auth.user)
+  
+  const dispatch : AppDispatch = useDispatch()
+  
   return (
     <Card className="max-w-[400px] m-auto">
       <CardHeader className="p-5">
         <div className="text-lg font-bold m-auto">Sign In</div>
       </CardHeader>
       <CardBody>
-        <Input type="email" variant="bordered" label="Email" />
-        <Spacer y={4} />
-        <Input type="password" variant="bordered" label="Password" />
-      </CardBody>
-      <CardFooter className="p-5">
-        <div className="w-full">
-          <Button variant="flat" className="w-full">
-            {" "}
-            Sign In{" "}
-          </Button>
-          <Spacer y={4} />
-          <div className="grid place-items-center">
-            <div> Or sign in with </div>
-            <Spacer y={2} />
-            <Button
+      <Button
               onClick={() => {
                 signInWithPopup(auth, provider)
                   .then((result) => {
@@ -51,9 +44,16 @@ export default function SignIn() {
 
                     localStorage.setItem("googleAccessToken", token)
 
-                    const user = result.user;
-
-                    console.log(user)
+                    const _user = result.user;
+                    
+                    dispatch(setUser(
+                      {
+                        uid: _user.uid,
+                        email: _user.email,
+                        fullName: _user.displayName,
+                        photoUrl: _user.photoURL,
+                      }
+                    ))
                   })
                   .catch((error) => {
                     // Handle Errors here.
@@ -67,16 +67,38 @@ export default function SignIn() {
                     // ...
                   });
               }}
-              isIconOnly
               variant="bordered"
               radius="sm"
-              size="lg"
+              startContent={<GoogleIcon />}
             >
-              <GoogleIcon />
+              Sign In with Google
             </Button>
-          </div>
+            <Spacer y={4}/>
+           <div className="flex items-center gap-2">
+           <Divider className="shrink "/>
+           <span className="text-xs"> OR </span>
+           <Divider  className="shrink "/>
+           </div>
+            <Spacer y={4}/>
+        <Input type="email" variant="bordered" label="Email" />
+        <Spacer y={4} />
+        <Input type="password" variant="bordered" label="Password" />
+        <Spacer y={2}/>
+        <div className="flex flex-row-reverse">
+        <Link href="#" size="sm" color="foreground" className="font-bold" underline="hover">Forget Password?</Link>
+        </div>
+      </CardBody>
+      <CardFooter className="p-5">
+        <div className="w-full">
+          <Button variant="flat" className="w-full">
+            {" "}
+            Sign In{" "}
+          </Button>
+          <Spacer y={2}/>
+         <span className="text-sm"> Do not have an accout?</span> <Link href="#" size="sm" color="foreground" underline="hover" className="font-bold">Sign Up</Link>
         </div>
       </CardFooter>
     </Card>
   );
 }
+
