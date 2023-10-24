@@ -86,7 +86,7 @@ export default function UserEdit() {
               <Avatar
                 // src="https://i.pravatar.cc/150?u=a04258114e29026708c"
                 src={avatarSrc}
-                className="w-55 h-55 text-large m-auto static"
+                className="w-55 h-55 m-auto static"
                 isBordered
               />
               <div className="flex items-center gap-4 m-auto mb-0">

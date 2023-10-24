@@ -15,8 +15,8 @@ import {
 
 export default function Details() {
   return (
-    <Card className="max-w-[700px] m-auto">
-      <CardHeader className="flex gap-3">
+    <Card className="max-w-[600px] m-auto">
+      <CardHeader className="flex">
         <div className="text-md font-bold m-auto text-3xl">
           User Information Details
         </div>
@@ -34,74 +34,116 @@ export default function Details() {
           <Spacer y={4} />
           <Divider />
           <Spacer y={4} />
-          <div>
-            <div className="gap-4 font-bold text-large">Username</div>
-            <div className="flex max-w h-15">
-              <Card>
-                <CardBody className="max-w">
-                  <p>username6969123</p>
-                </CardBody>
-              </Card>
+          <div className="flex justify-between">
+            <div className="grid pl-5">
+              <div>
+                <Textarea
+                  isReadOnly
+                  variant="bordered"
+                  label="Username"
+                  labelPlacement="outside"
+                  placeholder="Username"
+                  defaultValue="Here is user Username"
+                  // value={null}
+                  size="sm"
+                  minRows={1}
+                  className="max-w h-auto"
+                />
+              </div>
+              <Spacer y={3} />
+              <div>
+                <Textarea
+                  isReadOnly
+                  variant="bordered"
+                  label="Fullname"
+                  labelPlacement="outside"
+                  placeholder="Enter your description"
+                  defaultValue="Here is user Fullname"
+                  // value={null}
+                  size="sm"
+                  minRows={1}
+                  className="max-w h-auto"
+                />
+              </div>
+              <Spacer y={3} />
+              <div>
+                <Textarea
+                  isReadOnly
+                  variant="bordered"
+                  placeholder="Email"
+                  label="Email"
+                  labelPlacement="outside"
+                  defaultValue="Here is user Email"
+                  // value={null}
+                  size="sm"
+                  minRows={1}
+                  className="max-w h-auto"
+                />
+              </div>
             </div>
-          </div>
-          <Spacer y={6} />
-          <div>
-            <div className="gap-4 font-bold text-large">Fullname</div>
-            <div className="flex max-w h-15">
-              <Card>
-                <CardBody className="max-w">
-                  <p>Nguyen nguyen nguyen nguyen</p>
-                </CardBody>
-              </Card>
+            <Spacer y={4} />
+            <div className="grid">
+              <div>
+                <Textarea
+                  isReadOnly
+                  variant="bordered"
+                  placeholder="Address"
+                  label="Address"
+                  labelPlacement="outside"
+                  defaultValue="Here is user Address"
+                  // value={null}
+                  size="sm"
+                  minRows={1}
+                  className="max-w h-auto"
+                />
+              </div>
+              <Spacer y={3} />
+              <div>
+                <Textarea
+                  isReadOnly
+                  variant="bordered"
+                  placeholder="Day of Birth"
+                  label="Day of Birth"
+                  labelPlacement="outside"
+                  defaultValue="Here is user Day of Birth"
+                  // value={null}
+                  size="sm"
+                  minRows={1}
+                  className="max-w h-auto"
+                />
+              </div>
+              <Spacer y={3} />
+              <div>
+                <Textarea
+                  isReadOnly
+                  variant="bordered"
+                  placeholder="Phonenumber"
+                  label="Phonenumber"
+                  labelPlacement="outside"
+                  defaultValue="11111111"
+                  // value={null}
+                  size="sm"
+                  minRows={1}
+                  className="max-w h-auto"
+                />
+              </div>
             </div>
-          </div>
-          <Spacer y={4} />
-          <div>
-            <div className="gap-4 font-bold text-large">Email</div>
-            <div className="flex max-w h-15">
-              <Card>
-                <CardBody className="max-w">
-                  <p>Nfpt@fpt.fpt.com</p>
-                </CardBody>
-              </Card>
-            </div>
-          </div>
-          <Spacer y={4} />
-          <div>
-            <div className="gap-4 font-bold text-large">Address</div>
-            <div className="flex max-w h-15">
-              <Card>
-                <CardBody className="max-w">
-                  <p>696969 Nguyen Thi Minh Khai Quan 1</p>
-                </CardBody>
-              </Card>
-            </div>
-          </div>
-          <Spacer y={4} />
-          <div>
-            <div className="gap-4 font-bold text-large">Date of Birth</div>
-            <div className="flex max-w h-15"> 
-              <Card>
-                <CardBody className="max-w">
-                  <p>06/09/2069</p>
-                </CardBody>
-              </Card>
-            </div>
+
           </div>
         </div>
       </CardBody>
       <Divider />
       <CardFooter>
-      <div className="flex m-auto item-center gap-7" color="active">
-            <Button radius="sm" type="submit" className="m-auto">
-              {" "}
-              Edit{" "}
-            </Button>
-            <Button radius="sm" type="button" className="m-auto" color="danger">
-              {" "}
-              Back{" "}
-            </Button>
-          </div>
+        <div className="flex m-auto item-center gap-7" color="active">
+          <Button radius="sm" type="submit" className="m-auto">
+            {" "}
+            Edit{" "}
+          </Button>
+          <Button radius="sm" type="button" className="m-auto" color="danger">
+            {" "}
+            Back{" "}
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );
