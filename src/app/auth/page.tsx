@@ -1,6 +1,6 @@
 "use client"
 
-import SignIn from "./_components/SignIn"
+import SignIn from "./sign-in/page"
 
 export default function Page() {
   return ( <div>

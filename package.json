@@ -9,8 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@microsoft/signalr": "^7.0.12",
     "@nextui-org/react": "^2.1.13",
     "@reduxjs/toolkit": "^1.9.7",
+    "axios": "^1.5.1",
     "firebase": "^10.5.0",
     "formik": "^2.4.5",
     "framer-motion": "^10.16.4",
