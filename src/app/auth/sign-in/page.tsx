@@ -46,7 +46,9 @@ export default function Page() {
   useEffect(() => {
     if (connection == null) return;
     connection.on("SignInSuccess", (message) => {
-      console.log(message);
+      localStorage.setItem("accessToken", message.accessToken)
+      const account = message.account
+      dispatch(setUser(account))  
     });
 
     connection.on("SignInError", (message) => {
@@ -55,7 +57,8 @@ export default function Page() {
 
   }, [connection]);
 
-  console.log(formik.values);
+  console.log(user)
+
   return (
     <Card className="max-w-[400px] m-auto">
       <form onSubmit={formik.handleSubmit}>

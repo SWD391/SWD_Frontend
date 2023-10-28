@@ -17,10 +17,12 @@ import { SearchIcon } from "./SearchIcon";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { setUser } from "@/redux/slices/auth.slice";
+import { useRouter } from "next/navigation";
 
 export default function NavBar() {
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch: AppDispatch = useDispatch();
+  const router = useRouter()
 
   return (
     <Navbar isBordered>
@@ -70,13 +72,14 @@ export default function NavBar() {
                 isBordered
                 as="button"
                 className="transition-transform"
-                name={user.fullName}
+                name={user.firstName}
                 size="sm"
-                src={user.photoUrl}
+                src={user.imageUrl}
               />
             </DropdownTrigger>
             <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem key="settings">My Profile</DropdownItem>
+              <DropdownItem key="profile" onClick={() => router.push("/user/profile")}>My Profile</DropdownItem>
+              <DropdownItem key="feedbacks" onClick={() => router.push("/user/feedbacks")}>Feedbacks</DropdownItem>
               <DropdownItem
                 key="logout"
                 onClick={() => dispatch(setUser(null))}
