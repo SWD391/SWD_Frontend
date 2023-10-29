@@ -20,6 +20,8 @@ import {
 import { FeedbackDetails, renderStatus, statusColorMapFeedback } from "../page";
 import ChooseEmployees from "./_components/ChooseEmployees";
 import { FormikValues, useFormik } from "formik";
+import { RootState } from "@/redux/store";
+import { useSelector } from "react-redux";
 
 export const FormikPropsContext = createContext<FormikValues | null>(null);
 
@@ -47,41 +49,38 @@ export default function Page() {
   }, [fetch]);
 
   interface InitialValues {
-    title: string,
-    description: string,
-    deadline: string,
+    title: string;
+    description: string;
+    deadline: string;
     employeeIds: string[];
   }
 
   const initialValues: InitialValues = {
     title: "",
     description: "",
-    deadline: new Date().toISOString( ),
+    deadline: new Date().toISOString(),
     employeeIds: [],
   };
+
+  const connection = useSelector((state: RootState) => state.signalR.hub);
+  useEffect(() => {
+    if (connection == null) return;
+    connection.on("CreateFixTaskSuccess", (message) => {
+      alert(message);
+    });
+  }, [connection]);
 
   const formik = useFormik({
     initialValues,
     onSubmit: async (values) => {
-      const accessToken = localStorage.getItem("accessToken");
-      console.log(accessToken);
-      if (accessToken == null) return;
-
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-      };
-      const url = `http://26.78.227.119:5065/api/FixTask`;
-
-      axios
-        .post(url, {
-          title: values.title,
-          description: values.description,
-          deadline: values.deadline,
-          feedbackId: id,
-          employeeIds: values.employeeIds
-        }, { headers })
-        .then((response) => alert(response.data))
-        .catch((error) => console.log(error));
+      if (connection == null) return;
+      connection.invoke("PostFixTask", {
+        title: values.title,
+        description: values.description,
+        deadline: values.deadline,
+        feedbackId: id,
+        employeeIds: values.employeeIds,
+      });
     },
   });
 
@@ -122,6 +121,15 @@ export default function Page() {
               label="Description"
               variant="flat"
               value={feedback?.description}
+            />
+            <Spacer y={4} />
+            <Input
+              isReadOnly
+              radius="sm"
+              type="text"
+              label="Creator Id"
+              variant="flat"
+              value={feedback?.creatorId}
             />
             <Spacer y={4} />
             <Input

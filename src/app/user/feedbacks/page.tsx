@@ -23,10 +23,9 @@ import {
 import { EditIcon } from "./_components/EditIcon";
 import { DeleteIcon } from "./_components/DeleteIcon";
 import { EyeIcon } from "./_components/EyeIcon";
-import CreateUser from "./_components/CreateUser";
-import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useParams, usePathname, useRouter } from "next/navigation";
+import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
   active: "success",

@@ -26,6 +26,9 @@ import { EyeIcon } from "./_components/EyeIcon";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useParams, usePathname, useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import { setNotifications } from "@/redux/slices/signalR.slice";
 
 export interface FeedbackDetails {
   feedbackId: string;
@@ -37,6 +40,15 @@ export interface FeedbackDetails {
   status: number;
   submitedDate: string | null; // Consider using a Date object if you need to work with dates in your application
   creatorId: string;
+}
+
+export interface NotificationDetails{
+  notificationId: string,
+  message: string,
+  accountId: string,
+  resourceUrl: string,
+  isView: boolean,
+  createdDate: string
 }
 
 export enum FeedbackStatus {
@@ -63,6 +75,8 @@ export const renderStatus = (number: 0 | 1 | 2) => {
 };
 
 export default function Page() {
+  const dispatch : AppDispatch = useDispatch()
+
   const [page, setPage] = React.useState(1);
 
   const router = useRouter();

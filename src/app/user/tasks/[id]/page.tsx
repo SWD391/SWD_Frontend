@@ -28,14 +28,14 @@ import {
 } from "../page";
 import { UserIcon } from "@heroicons/react/24/outline";
 import { formatDate } from "@/app/admin/manager/feedbacks/[id]/_components/ChooseEmployees";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 export default function Page() {
   const params = useParams();
   const id = params.id as string;
 
   const [fixTask, setFixTask] = useState<FixTaskDetails | null>(null);
-
-  const [fetch, setFetch] = useState(false);
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -50,7 +50,7 @@ export default function Page() {
       .get(url, { headers })
       .then((response) => setFixTask(response.data))
       .catch((error) => console.log(error));
-  }, [fetch]);
+  }, []);
 
   console.log(fixTask);
   const createList = (list: AssignedDetails[] | undefined) => {
@@ -64,6 +64,19 @@ export default function Page() {
     return <ul> {body} </ul>;
   };
 
+  const connection = useSelector((state: RootState) => state.signalR.hub);
+
+  useEffect(() => {
+    if (connection == null) return;
+    connection.on("ProcessFixTaskSuccess", (message) => {
+      alert(message);
+    });
+    connection.on("ReceiveFixTaskSuccess", (message) => {
+      alert(message);
+    });
+  }, [connection]);
+
+  console.log(fixTask)
   const _renderButtons = () => {
     switch (fixTask?.status) {
       case FixTaskStatus.Pending:
@@ -73,28 +86,12 @@ export default function Page() {
               radius="sm"
               color="danger"
               onClick={async () => {
-                const accessToken = localStorage.getItem("accessToken");
-                console.log(accessToken);
-                if (accessToken == null) return;
+                if (connection == null) return;
 
-                const headers = {
-                  Authorization: `Bearer ${accessToken}`,
-                };
-                const url = `http://26.78.227.119:5065/api/FixTask/ReceiveFixTask`;
-                axios
-                  .put(
-                    url,
-                    {
-                      fixTaskId: id,
-                      handle: false,
-                    },
-                    { headers }
-                  )
-                  .then((response) => {
-                    setFetch(false);
-                    alert(response.data);
-                  })
-                  .catch((error) => console.log(error));
+                connection.invoke("ReceiveFixTask", {
+                  fixTaskId: id,
+                  handle: false,
+                });
               }}
             >
               {" "}
@@ -103,28 +100,12 @@ export default function Page() {
             <Button
               radius="sm"
               onClick={async () => {
-                const accessToken = localStorage.getItem("accessToken");
-                console.log(accessToken);
-                if (accessToken == null) return;
+                if (connection == null) return;
 
-                const headers = {
-                  Authorization: `Bearer ${accessToken}`,
-                };
-                const url = `http://26.78.227.119:5065/api/FixTask/ReceiveFixTask`;
-                axios
-                  .put(
-                    url,
-                    {
-                      fixTaskId: id,
-                      handle: true,
-                    },
-                    { headers }
-                  )
-                  .then((response) => {
-                    setFetch(true);
-                    alert(response.data);
-                  })
-                  .catch((error) => console.log(error));
+                connection.invoke("ReceiveFixTask", {
+                  fixTaskId: id,
+                  handle: true,
+                });
               }}
             >
               {" "}
@@ -133,33 +114,17 @@ export default function Page() {
           </>
         );
       case FixTaskStatus.Accepted:
-        <>
+        return <>
           <Button
             radius="sm"
             color="danger"
             onClick={async () => {
-              const accessToken = localStorage.getItem("accessToken");
-              console.log(accessToken);
-              if (accessToken == null) return;
+              if (connection == null) return;
 
-              const headers = {
-                Authorization: `Bearer ${accessToken}`,
-              };
-              const url = `http://26.78.227.119:5065/api/FixTask/ReceiveFixTask`;
-              axios
-                .put(
-                  url,
-                  {
-                    fixTaskId: id,
-                    handle: false,
-                  },
-                  { headers }
-                )
-                .then((response) => {
-                  setFetch(false);
-                  alert(response.data);
-                })
-                .catch((error) => console.log(error));
+              connection.invoke("ProcessFixTask", {
+                fixTaskId: id,
+                handle: false,
+              });
             }}
           >
             {" "}
@@ -168,28 +133,12 @@ export default function Page() {
           <Button
             radius="sm"
             onClick={async () => {
-              const accessToken = localStorage.getItem("accessToken");
-              console.log(accessToken);
-              if (accessToken == null) return;
+              if (connection == null) return;
 
-              const headers = {
-                Authorization: `Bearer ${accessToken}`,
-              };
-              const url = `http://26.78.227.119:5065/api/FixTask/ReceiveFixTask`;
-              axios
-                .put(
-                  url,
-                  {
-                    fixTaskId: id,
-                    handle: true,
-                  },
-                  { headers }
-                )
-                .then((response) => {
-                  setFetch(true);
-                  alert(response.data);
-                })
-                .catch((error) => console.log(error));
+              connection.invoke("ProcessFixTask", {
+                fixTaskId: id,
+                handle: true,
+              });
             }}
           >
             {" "}
@@ -256,9 +205,7 @@ export default function Page() {
         {createList(fixTask?.assignedDetails)}
       </CardBody>
       <CardFooter className="p-5">
-        <div className="m-auto flex gap-4">
-          {_renderButtons()}
-        </div>
+        <div className="m-auto flex gap-4">{_renderButtons()}</div>
       </CardFooter>
     </Card>
   );

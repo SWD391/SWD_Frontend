@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import {
   Card,
@@ -21,6 +21,8 @@ import { storage } from "@/app/firebase";
 import { createImageBlobUrl } from "@/app/utils";
 import axios from "axios";
 import { setUser } from "@/redux/slices/auth.slice";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 export enum AssetStatus {
   Functional,
@@ -59,6 +61,15 @@ export default function Page() {
 
   const [imageUrl, setImageUrl] = useState("");
 
+  const connection = useSelector((state: RootState) => state.signalR.hub)
+  
+  useEffect(() => {
+    if (connection == null) return;
+    connection.on("CreateFeedbackSuccess", (message) => {
+      alert(message)
+    })
+  }, [connection]);
+
   const formik = useFormik({
     initialValues,
     onSubmit: async (values) => {
@@ -68,30 +79,14 @@ export default function Page() {
       await uploadBytes(storageRef, image);
       const downloadUrl = await getDownloadURL(storageRef);
 
-      const accessToken = localStorage.getItem("accessToken");
-      console.log(accessToken);
-      if (accessToken == null) return;
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-      };
-
-      axios
-        .post(
-          "http://26.78.227.119:5065/api/Feedbacks",
-          {
-            title: values.title,
-            description: values.description,
-            imageUrl: downloadUrl,
-            assetId: values.assetId
-          },
-          { headers }
-        )
-        .then((response) => {
-          console.log(response.data)
-        })
-        .catch((error) => console.log(error));
-    },
-  });
+      if (connection == null) return;
+      await connection.invoke("CreateFeedback",   {
+        title: values.title,
+        description: values.description,
+        imageUrl: downloadUrl,
+        assetId: values.assetId
+      }) 
+}})
 
   const [assets, setAssets] = useState<Asset[]>([]);
 
