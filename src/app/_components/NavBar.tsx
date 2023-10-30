@@ -244,7 +244,10 @@ export default function NavBar() {
               </DropdownItem>
               <DropdownItem
                 key="logout"
-                onClick={() => dispatch(setUser(null))}
+                onClick={() => {
+                  dispatch(setUser(null))
+                  localStorage.removeItem("accessToken")
+                }}
                 color="danger"
               >
                 Log Out
@@ -262,8 +265,8 @@ export default function NavBar() {
               />
             </DropdownTrigger>
             <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem key="signin">Sign In</DropdownItem>
-              <DropdownItem key="signup">Sign Up</DropdownItem>
+              <DropdownItem key="signin" onClick={() => router.push("/auth/sign-in")}>Sign In</DropdownItem>
+              <DropdownItem key="signup" onClick={() => router.push("/auth/sign-up")}>Sign Up</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         )}

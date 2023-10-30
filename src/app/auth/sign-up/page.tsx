@@ -22,6 +22,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/redux/slices/auth.slice";
 import { useFormik } from "formik";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import { AccountRole } from "@/app/admin/manager/feedbacks/[id]/_components/EmployeeTable";
+import { formatDate } from "@/app/admin/manager/feedbacks/[id]/_components/ChooseEmployees";
 
 export default function Page() {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -34,7 +37,10 @@ export default function Page() {
     email: string;
     phone: string;
     address: string;
-    birthdate: Date;
+    birthdate: string;
+    firstName: string;
+    lastName: string;
+    role: AccountRole
   }
 
   const initialValues: InitialValues = {
@@ -43,26 +49,34 @@ export default function Page() {
     email: "",
     phone: "",
     address: "",
-    birthdate: new Date(),
+    birthdate: new Date().toString(),
+    firstName: "",
+    lastName: "",
+    role: AccountRole.FeedbackPerson
   };
 
   const formik = useFormik({
     initialValues,
     onSubmit: (values) => {
-      axios.post("https://localhost:7046/api/Accounts/RegisterAccountManager", {
-          username: values.username,
+      axios
+        .post("http://26.78.227.119:5065/api/Accounts/SignUp", {
           password: values.password,
           email: values.email,
-          phone: values.phone,
+          phoneNumber: values.phone,
           address: values.address,
-          birthday: values.birthdate.toISOString()
-      }).then(response => console.log(response))
-      .catch(error => console.log(error))
+          birthday: convertToCustomFormat(values.birthdate),
+          firstName: values.firstName,
+          lastName: values.lastName,
+          role: values.role
+        })
+        .then((response) => alert(response.data))
+        .catch((error) => console.log(error));
     },
   });
+  console.log(formik.values)
 
+  const router = useRouter();
   return (
-
     <Card className="max-w-[400px] m-auto">
       <form onSubmit={formik.handleSubmit}>
         <CardHeader className="p-5">
@@ -84,14 +98,6 @@ export default function Page() {
             id="password"
             label="Password"
             value={formik.values.password}
-            onChange={formik.handleChange}
-          />
-          <Spacer y={4} />
-          <Input
-            variant="bordered"
-            id="username"
-            label="Username"
-            value={formik.values.username}
             onChange={formik.handleChange}
           />
           <Spacer y={4} />
@@ -119,11 +125,31 @@ export default function Page() {
           <Input
             type="date"
             variant="bordered"
-            id="password"
+            id="birthdate"
             label="Birthdate"
-            value={formik.values.birthdate.toDateString()}
+            value={formik.values.birthdate}
             onChange={formik.handleChange}
           />
+          <Spacer y={4} />
+          <Select
+            items={[
+              {
+                id: 0,
+                value: "Feedback Person",
+              },
+              {
+                id: 1,
+                value: "Employee",
+              },
+            ]}
+            label="Select Role"
+            selectedKeys={[formik.values.role.toString()]}
+            onChange={event => formik.setFieldValue("role", event.target.value)}
+          >
+            {(item) => (
+              <SelectItem key={item.id}>{item.value}</SelectItem>
+            )}
+          </Select>
         </CardBody>
         <CardFooter className="p-5">
           <div className="w-full">
@@ -134,7 +160,7 @@ export default function Page() {
             <Spacer y={2} />
             <span className="text-sm"> Already have an account?</span>{" "}
             <Link
-              href="#"
+              onClick={() => router.push("/auth/sign-in")}
               size="sm"
               color="foreground"
               underline="hover"
@@ -147,4 +173,16 @@ export default function Page() {
       </form>
     </Card>
   );
+}
+
+function convertToCustomFormat(dateString) {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(1, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  
+  const customFormat = `${year}-${month}-${day}Z${hours}:${minutes}T`;
+  return customFormat;
 }

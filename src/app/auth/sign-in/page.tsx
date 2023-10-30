@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/redux/slices/auth.slice";
 import { useFormik } from "formik";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -58,6 +59,7 @@ export default function Page() {
   }, [connection]);
 
   console.log(user)
+  const router = useRouter()
 
   return (
     <Card className="max-w-[400px] m-auto">
@@ -138,7 +140,7 @@ export default function Page() {
           <Spacer y={2} />
           <div className="flex flex-row-reverse">
             <Link
-              href="#"
+              onClick={() => router.push("/auth/sign-up")}
               size="sm"
               color="foreground"
               className="font-bold"
@@ -157,7 +159,7 @@ export default function Page() {
             <Spacer y={2} />
             <span className="text-sm"> Do not have an accout?</span>{" "}
             <Link
-              href="#"
+               onClick={() => router.push("/auth/sign-up")}
               size="sm"
               color="foreground"
               underline="hover"
