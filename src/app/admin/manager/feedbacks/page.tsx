@@ -43,6 +43,27 @@ export interface FeedbackDetails {
   status: number;
   submitedDate: string | null; // Consider using a Date object if you need to work with dates in your application
   creatorId: string;
+  asset: AssetDetails;
+}
+
+export interface AssetDetails {
+  assetId: string;
+  assetName: string;
+  imageUrl: string;
+  color: string;
+  type: string;
+  status: AssetStatus;
+  price: number;
+  importedDate: Date;
+  description: string;
+  importerId: string;
+  location: string;
+}
+
+export enum AssetStatus {
+  Functional,
+  UnderRepair,
+  NonFunctional,
 }
 
 export enum FeedbackStatus {
@@ -133,16 +154,12 @@ export default function Page() {
                 </span>
               </Tooltip>
               <Tooltip content="Edit">
-                <span
-                  className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                >
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                   <EditIcon />
                 </span>
               </Tooltip>
               <Tooltip content="Delete" color="danger">
-                <span
-                  className="text-lg text-danger cursor-pointer active:opacity-50"
-                >
+                <span className="text-lg text-danger cursor-pointer active:opacity-50">
                   <DeleteIcon />
                 </span>
               </Tooltip>
@@ -160,7 +177,9 @@ export default function Page() {
           return (
             <div className="flex flex-col">
               <p className="text-bold text-sm capitalize">
-                {feedback.submitedDate != null ? new Date(feedback.submitedDate).toLocaleString() : "N/A"}
+                {feedback.submitedDate != null
+                  ? new Date(feedback.submitedDate).toLocaleString()
+                  : "N/A"}
               </p>
             </div>
           );
@@ -176,7 +195,7 @@ export default function Page() {
             </Chip>
           );
         default:
-          return cellValue;
+          return "";
       }
     },
     []

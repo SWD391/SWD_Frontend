@@ -30,9 +30,6 @@ export default function Page() {
   const id = params.id as string;
 
   const [feedback, setFeedback] = useState<FeedbackDetails | null>(null);
-
-  const [fetch, setFetch] = useState(false);
-
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     console.log(accessToken);

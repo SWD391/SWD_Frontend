@@ -26,6 +26,7 @@ import { EyeIcon } from "./_components/EyeIcon";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useParams, usePathname, useRouter } from "next/navigation";
+import { FixTaskDetails } from "@/app/admin/manager/tasks/page";
 
 export interface AssignedDetails{
   assignedDetailsId: string,
@@ -33,19 +34,6 @@ export interface AssignedDetails{
   taskId: string
 }
 
-export interface FixTaskDetails {
-  taskId: string;
-  title: string;
-  description: string;
-  createdDate: string;
-  authorId: string;
-  status: FixTaskStatus;
-  receivedDate?: string;
-  processedDate?: string;
-  feedbackId: string;
-  deadline: string;
-  assignedDetails: AssignedDetails[]
-}
 export enum FixTaskStatus {
   Pending,
   Rejected,

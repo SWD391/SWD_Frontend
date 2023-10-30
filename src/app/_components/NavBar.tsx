@@ -24,6 +24,7 @@ import { NotificationIcon } from "./NotificationIcon";
 import { BellIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { setNotifications } from "@/redux/slices/signalR.slice";
+import { AccountRole } from "../admin/manager/feedbacks/[id]/_components/EmployeeTable";
 
 export default function NavBar() {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -35,8 +36,11 @@ export default function NavBar() {
   );
 
   const renderViewed = () => {
-    return notifications.length - notifications.filter(predicate => predicate.isView).length;
-  }
+    return (
+      notifications.length -
+      notifications.filter((predicate) => predicate.isView).length
+    );
+  };
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -46,72 +50,145 @@ export default function NavBar() {
       Authorization: `Bearer ${accessToken}`,
     };
 
-    axios.get("http://26.78.227.119:5065/api/Notification/GetNotifications", { headers})
-    .then(response => dispatch(setNotifications(response.data)))
-    .catch(error => console.log(error))
+    axios
+      .get("http://26.78.227.119:5065/api/Notification/GetNotifications", {
+        headers,
+      })
+      .then((response) => dispatch(setNotifications(response.data)))
+      .catch((error) => console.log(error));
   }, []);
 
   const _renderNotis = () => {
-    const items: JSX.Element[] = []
+    const items: JSX.Element[] = [];
 
-    for (const noti of notifications){
-      items.push( <DropdownItem key={noti.notificationId}>
-        {" "}
-        <Link color="foreground" onClick={() => {
+    for (const noti of notifications) {
+      items.push(
+        <DropdownItem key={noti.notificationId}>
+          {" "}
+          <Link
+            color="foreground"
+            onClick={() => {
+              const accessToken = localStorage.getItem("accessToken");
+              console.log(accessToken);
+              if (accessToken == null) return;
+              const headers = {
+                Authorization: `Bearer ${accessToken}`,
+              };
+
+              axios
+                .post(
+                  `http://26.78.227.119:5065/api/Notification/SetNotificationViewed?notiId=${noti.notificationId}`,
+                  {},
+                  { headers }
+                )
+                .then((response) => dispatch(setNotifications(response.data)))
+                .catch((error) => console.log(error));
+            }}
+            href={noti.resourceUrl}
+            className={!noti.isView ? "text-red-500" : undefined}
+          >
+            {" "}
+            {noti.message}{" "}
+          </Link>
+        </DropdownItem>
+      );
+    }
+    items.push(
+      <DropdownItem
+        className="text-center"
+        onClick={() => {
           const accessToken = localStorage.getItem("accessToken");
           console.log(accessToken);
           if (accessToken == null) return;
           const headers = {
             Authorization: `Bearer ${accessToken}`,
           };
-      
-          axios.post(`http://26.78.227.119:5065/api/Notification/SetNotificationViewed?notiId=${noti.notificationId}`, {},  {headers})
-          .then(response => dispatch(setNotifications(response.data)))
-          .catch(error => console.log(error))
-          
-        }} href={noti.resourceUrl} className={!noti.isView ? "text-red-500" : undefined}>
-          {" "}
-          {noti.message}{" "}
-        </Link>
-      </DropdownItem>)
+
+          axios
+            .post(
+              "http://26.78.227.119:5065/api/Notification/SetAllNotificationsViewed",
+              {},
+              { headers }
+            )
+            .then((response) => dispatch(setNotifications(response.data)))
+            .catch((error) => console.log(error));
+        }}
+      >
+        {" "}
+        <span className="font-bold"> Mark As Readed </span>{" "}
+      </DropdownItem>
+    );
+    return items;
+  };
+
+  const postfix = () => {
+    switch (user?.role) {
+      case 2:
+        return "staff";
+      case 3:
+        return "manager";
+      case 0:
+      case 1:
+      default:
+        return "";
     }
-    items.push(   <DropdownItem  className="text-center"  onClick={() => {
-      const accessToken = localStorage.getItem("accessToken");
-      console.log(accessToken);
-      if (accessToken == null) return;
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-      };
-  
-      axios.post("http://26.78.227.119:5065/api/Notification/SetAllNotificationsViewed", {},  {headers})
-      .then(response => dispatch(setNotifications(response.data)))
-      .catch(error => console.log(error))
-    }}> <span className="font-bold"> Mark As Readed </span> </DropdownItem>)
-    return items
-  }
+  };
   return (
     <Navbar isBordered>
       <NavbarContent justify="start">
         <NavbarBrand className="mr-4">
           <Logo />
-          <p className="hidden sm:block font-bold text-inherit">ACME</p>
+          <p className="hidden sm:block font-bold text-inherit">Facifix</p>
         </NavbarBrand>
-        <NavbarContent className="hidden sm:flex gap-3">
-          <NavbarItem>
-            <Link color="foreground" href="#">
-              Features
-            </Link>
-          </NavbarItem>
+        <NavbarContent className="hidden sm:flex gap-6">
           <NavbarItem isActive>
-            <Link href="#" aria-current="page" color="secondary">
-              Customers
+            <Link
+              href="#"
+              aria-current="page"
+              color="secondary"
+              onClick={() => router.push("/assets")}
+            >
+              Assets
             </Link>
           </NavbarItem>
           <NavbarItem>
-            <Link color="foreground" href="#">
-              Integrations
+            <Link
+              color="foreground"
+              onClick={() => router.push("/user/feedbacks/create")}
+            >
+              Create Feedback
             </Link>
           </NavbarItem>
+
+          {postfix() != "" ? (
+            <Dropdown placement="bottom-end">
+              <DropdownTrigger>
+                <Link color="foreground" className="whitespace-nowrap">
+                  Admin Dashboard
+                </Link>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Profile Actions" variant="flat">
+                <DropdownItem
+                  key="profile"
+                  onClick={() => router.push(`/admin/users`)}
+                >
+                  Manage Users
+                </DropdownItem>
+                <DropdownItem
+                  key="feedbacks"
+                  onClick={() => router.push(`/admin/${postfix()}/feedbacks`)}
+                >
+                  Manage Feedbacks
+                </DropdownItem>
+                <DropdownItem
+                  key="feedbacks"
+                  onClick={() => router.push(`/admin/${postfix()}/tasks`)}
+                >
+                  Manage Tasks
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          ) : null}
         </NavbarContent>
       </NavbarContent>
 
@@ -125,11 +202,11 @@ export default function NavBar() {
                 aria-label="more than 99 notifications"
                 variant="light"
               >
-                <BellIcon className="w-6 h-6"/>
+                <BellIcon className="w-6 h-6" />
               </Button>
             </DropdownTrigger>
             <DropdownMenu aria-label="Static Actions">
-                {_renderNotis()}
+              {_renderNotis()}
             </DropdownMenu>
           </Dropdown>
         </Badge>
@@ -158,6 +235,12 @@ export default function NavBar() {
                 onClick={() => router.push("/user/feedbacks")}
               >
                 Feedbacks
+              </DropdownItem>
+              <DropdownItem
+                key="feedbacks"
+                onClick={() => router.push("/user/tasks")}
+              >
+                Tasks
               </DropdownItem>
               <DropdownItem
                 key="logout"

@@ -47,16 +47,31 @@ export default function Page() {
     const url = `http://26.78.227.119:5065/api/FixTask?taskId=${id}`;
     axios
       .get(url, { headers })
-      .then((response) => setFixTask(response.data))
+      .then((response) => {
+        console.log(response.data);
+        setFixTask(response.data);
+      })
       .catch((error) => console.log(error));
   }, [fetch]);
 
-  console.log(fixTask);
   const createList = (list: AssignedDetails[] | undefined) => {
-    if (list == undefined) return null
-    const body = list.map((element) => <li className="text-sm flex gap-2 items-center"> <UserIcon className="w-4 h-4"/> {element.employeeId} </li>);
+    if (list == undefined) return null;
+    const body = list.map((element) => (
+      <li className="text-sm flex gap-2 items-center">
+        {" "}
+        <UserIcon className="w-4 h-4" /> {element.employeeId}{" "}
+      </li>
+    ));
     return <ul> {body} </ul>;
   };
+
+  const [currentStatus, setCurrentStatus] = useState(0);
+
+  useEffect(() => {
+    if (fixTask == null) return 
+     setCurrentStatus(fixTask.feedback.asset.status)
+  }, [fixTask])
+
   return (
     <Card className="max-w-[600px] mx-auto">
       <CardHeader className="p-5">
@@ -85,10 +100,11 @@ export default function Page() {
           isReadOnly
           radius="sm"
           type="text"
-          label="Feedback Id"
+          label="Feedback Title"
           variant="flat"
-          value={fixTask?.feedbackId}
+          value={fixTask?.feedback.title}
         />
+
         <Spacer y={4} />
         <Textarea
           id="description"
@@ -98,18 +114,78 @@ export default function Page() {
           value={fixTask?.description}
         />
         <Spacer y={4} />
-        <Input type="datetime-local"  isReadOnly
+        <Input
+          type="datetime-local"
+          isReadOnly
           radius="sm"
           label="Deadline"
-          variant="flat" value={formatDate(fixTask?.deadline as string)}/>
+          variant="flat"
+          value={formatDate(fixTask?.deadline as string)}
+        />
         <Spacer y={4} />
         <div className="text-xs"> Assigned To</div>
-        <Spacer y={1}/>
+        <Spacer y={1} />
         {createList(fixTask?.assignedDetails)}
+        <Spacer y={12} />
+        <div className="text-xl font-bold"> Asset </div>
+        <Spacer y={4} />
+        <Input
+          isReadOnly
+          radius="sm"
+          type="text"
+          label="Asset Name"
+          variant="flat"
+          value={fixTask?.feedback.asset.assetName}
+        />
+        <Spacer y={4} />
+        <Select
+          items={[
+            {
+              key: 0,
+              value: "Functional",
+            },
+            {
+              key: 1,
+              value: "Under Repair",
+            },
+            {
+              key: 2,
+              value: "Non-Functional",
+            },
+          ]}
+          label="Update Status"
+          placeholder="Select an animal"
+          selectedKeys={[currentStatus.toString()]}
+          onChange={(event) => setCurrentStatus(Number(event.target.value))}
+        >
+          {(aa) => <SelectItem key={aa.key.toString()}>{aa.value}</SelectItem>}
+        </Select>
       </CardBody>
       <CardFooter className="p-5">
-        <div className="m-auto flex gap-4">
-        </div>
+        <Button
+          className="mx-auto"
+          onClick={() => {
+            const accessToken = localStorage.getItem("accessToken");
+            if (accessToken == null) return;
+            const headers = {
+              Authorization: `Bearer ${accessToken}`,
+            };
+            const url = "http://26.78.227.119:5065/api/Asset/UpdateAssetStatus";
+            axios
+              .put(
+                url,
+                {
+                  assetId: fixTask?.feedback.assetId,
+                  status: currentStatus,
+                },
+                { headers }
+              )
+              .then((response) => alert(response.data))
+              .catch((error) => console.log(error));
+          }}
+        >
+          Apply Change
+        </Button>
       </CardFooter>
     </Card>
   );

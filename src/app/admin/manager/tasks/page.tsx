@@ -26,6 +26,7 @@ import { EyeIcon } from "./_components/EyeIcon";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useParams, usePathname, useRouter } from "next/navigation";
+import { FeedbackDetails } from "../feedbacks/page";
 
 export interface AssignedDetails{
   assignedDetailsId: string,
@@ -44,6 +45,7 @@ export interface FixTaskDetails {
   processedDate?: string;
   feedbackId: string;
   deadline: string;
+  feedback: FeedbackDetails
   assignedDetails: AssignedDetails[]
 }
 export enum FixTaskStatus {

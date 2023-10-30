@@ -10,6 +10,7 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
+  Chip,
   Divider,
   Image,
   Input,
@@ -17,6 +18,8 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import { FeedbackDetails } from "../page";
+import ChooseEmployees from "@/app/admin/manager/feedbacks/[id]/_components/ChooseEmployees";
+import { renderStatus, statusColorMapFeedback } from "@/app/admin/staff/feedbacks/page";
 
 export default function Page() {
   const params = useParams();
@@ -41,35 +44,57 @@ export default function Page() {
 
   return (
     <Card className="max-w-[600px] mx-auto">
-      <CardHeader className="p-5">
-        <div className="text-lg font-bold m-auto">Feedback Details</div>
-      </CardHeader>
-      <CardBody>
-        <Input
-          isReadOnly
-          radius="sm"
-          isRequired
-          type="text"
-          label="Title"
-        />
-        <Spacer y={4} />
-        <Image />
-        <Spacer y={4} />
-        <Textarea
-          id="description"
-          radius="sm"
-          isRequired
-          label="Description"
-          labelPlacement="inside"
-        />
-        <Spacer y={4} />
-      </CardBody>
-      <CardFooter className="p-5">
-        <Button radius="sm" type="submit" className="m-auto">
-          {" "}
-          Create{" "}
-        </Button>
-      </CardFooter>
+        <CardHeader className="p-5">
+          <div className="text-lg font-bold m-auto">
+            <div className="items-center">
+              <div className="text-center">{feedback?.title}</div>
+              <Spacer y={1} />
+              <div className="text-center">
+                <Chip
+                  className="capitalize"
+                  color={
+                    statusColorMapFeedback[feedback?.status as 0 | 1 | 2]
+                  }
+                  size="sm"
+                  variant="flat"
+                >
+                  {" "}
+                  {renderStatus(feedback?.status as 0 | 1 | 2)}
+                </Chip>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardBody>
+          <Spacer y={4} />
+          <Image src={feedback?.imageUrl} />
+          <Spacer y={4} />
+          <Textarea
+            id="description"
+            radius="sm"
+            label="Description"
+            variant="flat"
+            value={feedback?.description}
+          />
+          <Spacer y={4} />
+          <Input
+            isReadOnly
+            radius="sm"
+            type="text"
+            label="Creator Id"
+            variant="flat"
+            value={feedback?.creatorId}
+          />
+          <Spacer y={4} />
+          <Input
+            isReadOnly
+            radius="sm"
+            type="text"
+            label="Asset Id"
+            variant="flat"
+            value={feedback?.assetId}
+          />
+        </CardBody>
   </Card>
   );
 }

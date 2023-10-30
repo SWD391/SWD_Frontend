@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import axios from "axios";
 import { HubConnectionBuilder, HttpTransportType } from '@microsoft/signalr';
 import WrappedRoot from "./_layout"
+import AppFooter from "./_components/AppFooter";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
@@ -36,9 +37,9 @@ export default function RootLayout({
             <NavBar />
             <Spacer y={12} />
             <div className="m-auto max-w-[1024px] px-6">
-              <Spacer y={12} />
               {children}
             </div>
+            <Spacer y={12} />
             </WrappedRoot>
           </Provider>
         </NextUIProvider>

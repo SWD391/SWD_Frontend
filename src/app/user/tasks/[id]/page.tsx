@@ -21,7 +21,6 @@ import {
 } from "@nextui-org/react";
 import {
   AssignedDetails,
-  FixTaskDetails,
   FixTaskStatus,
   renderStatus,
   statusColorMapFixTask,
@@ -30,6 +29,7 @@ import { UserIcon } from "@heroicons/react/24/outline";
 import { formatDate } from "@/app/admin/manager/feedbacks/[id]/_components/ChooseEmployees";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import { FixTaskDetails } from "@/app/admin/manager/tasks/page";
 
 export default function Page() {
   const params = useParams();
@@ -203,10 +203,41 @@ export default function Page() {
         <div className="text-xs"> Assigned To</div>
         <Spacer y={1} />
         {createList(fixTask?.assignedDetails)}
+        <Spacer y={12} />
+        <div className="text-xl font-bold"> Asset </div>
+        <Spacer y={4} />
+        <Input
+          isReadOnly
+          radius="sm"
+          type="text"
+          label="Asset Name"
+          variant="flat"
+          value={fixTask?.feedback.asset.assetName}
+        />
+        <Spacer y={4} />
+        <Input
+          isReadOnly
+          radius="sm"
+          type="text"
+          label="Asset Name"
+          variant="flat"
+          value={getStatus(fixTask?.feedback.asset.status as 0|1|2  )}
+        />
+        <Spacer y={4} />
       </CardBody>
       <CardFooter className="p-5">
         <div className="m-auto flex gap-4">{_renderButtons()}</div>
       </CardFooter>
     </Card>
   );
+}
+
+export const getStatus = (aaa: 0|1|2) => {
+  if (aaa == 0) {
+    return "Functional"
+  } else if (aaa= 1){
+    return "Under Maintainance"
+  } else {
+    return "Non-Functional"
+  }
 }
